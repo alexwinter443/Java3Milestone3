@@ -18,13 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.gcu.MilestoneApplication;
 import com.gcu.model.UserModel;
-
+/*
+ * Kacey morris and Alex vergara
+ * Milestone
+ * 10/3/2021
+ */
 @Controller
 @RequestMapping("/main")
-
 public class UserController {
 	
-	
+	// home route
 	@GetMapping("/home")
 	public String homePage(Model model) {
 		// Display Login Form View
@@ -35,14 +38,15 @@ public class UserController {
 		return "homePage";
 	}
 	
+	// login route takes us to login page
 	@GetMapping("/login")
 	public String display(Model model) {
 		// Display Login Form View
-		model.addAttribute("title", "Login Form");
 		model.addAttribute("userModel", new UserModel());
 		return "login";
 	}
 	
+	// this route is for the login form post
 	@PostMapping("/doLogin")
 	public String doLogin(@Valid UserModel userModel, BindingResult bindingResult, Model model, @CookieValue(value = "username", defaultValue = "Atta") String username, 
 			@CookieValue(value = "password", defaultValue = "Atta") String password) {
@@ -63,14 +67,16 @@ public class UserController {
 		return "LoginSuccess";
 	}
 	
+	// this takes us to the register page
 	@GetMapping("/register")
 	public String showRegister(Model model) {
 		// Display Register Form View
-		model.addAttribute("title", "Registration Form");
 		model.addAttribute("userModel", new UserModel());
+	
 		return "register";
 	}
 	
+	// this is used for the register form
 	@PostMapping("/doRegister")
 	public String doRegister(@Valid UserModel userModel, BindingResult bindingResult, Model model, HttpServletResponse response) {
 		// check for errors
@@ -79,8 +85,10 @@ public class UserController {
 			return "register";
 		}
 		
+		// add user model
 		model.addAttribute("userModel", userModel);
 		
+		// these cookies keep track of current registered user
 		Cookie cookie = new Cookie("username", userModel.getUsername());
 		Cookie cookie2 = new Cookie("password", userModel.getPassword());
 		response.addCookie(cookie);

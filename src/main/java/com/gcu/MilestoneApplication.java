@@ -8,6 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.gcu.model.UserModel;
 
+/*
+ * Kacey morris and Alex vergara
+ * Milestone
+ * 10/3/2021
+ */
 @SpringBootApplication
 public class MilestoneApplication {
 	

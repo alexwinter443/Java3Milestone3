@@ -3,6 +3,11 @@ package com.gcu.model;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/*
+ * Kacey morris and Alex vergara
+ * Milestone
+ * 10/3/2021
+ */
 public class UserModel {
 	@NotNull(message="Username is a required field")
 	@Size(min=3, max=32, message="Username must be between 3 and 32 characters")
