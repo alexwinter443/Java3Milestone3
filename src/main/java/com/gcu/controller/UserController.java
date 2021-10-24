@@ -7,6 +7,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,15 +18,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.gcu.MilestoneApplication;
+import com.gcu.business.SecurityServiceInterface;
+import com.gcu.model.ProductModel;
 import com.gcu.model.UserModel;
 /*
  * Kacey morris and Alex vergara
  * Milestone
- * 10/3/2021
+ * 10/22/2021
  */
 @Controller
 @RequestMapping("/main")
 public class UserController {
+	
+	// DEPENDENCY INJECTION
+	@Autowired
+	SecurityServiceInterface securityService;
+	
 	
 	// home route
 	@GetMapping("/home")
@@ -46,26 +54,34 @@ public class UserController {
 		return "login";
 	}
 	
-	// this route is for the login form post
+	
+	// Login Form
 	@PostMapping("/doLogin")
-	public String doLogin(@Valid UserModel userModel, BindingResult bindingResult, Model model, @CookieValue(value = "username", defaultValue = "Atta") String username, 
-			@CookieValue(value = "password", defaultValue = "Atta") String password) {
-		// check for errors
-		if (bindingResult.hasErrors()) {
+	public String doLogin(@Valid UserModel loginModel, BindingResult bindingResult, Model model, @CookieValue(value = "username", defaultValue = "Atta") String username, 
+			@CookieValue(value = "password", defaultValue = "Atta") String password)
+	{
+		//console output showing that the securityService is running
+		securityService.test();
+		
+		if(bindingResult.hasErrors()) {
 			model.addAttribute("title", "Login Form");
 			return "login";
+		}		
+		
+		// Dependency injection
+		// if user exists 
+		if(securityService.isAuthenticated(loginModel, username, password)) {
+			model.addAttribute("model", loginModel);
+			return "LoginSuccess";
 		}
-		// if the username or password does not equal the hardcoded values
-		else if (!userModel.getUsername().trim().equals(username) || !userModel.getPassword().trim().equals(password)) {
-			// login has failed
-			model.addAttribute("userModel", userModel);
+		// if user is not registered
+		else {
+			System.out.println(username);
 			return "LoginFailed";
 		}
-	
-		// if no errors and credentials are correct, successful login
-		model.addAttribute("userModel", userModel);
-		return "LoginSuccess";
+		
 	}
+	
 	
 	// this takes us to the register page
 	@GetMapping("/register")
@@ -76,7 +92,7 @@ public class UserController {
 		return "register";
 	}
 	
-	// this is used for the register form
+	// register form post	
 	@PostMapping("/doRegister")
 	public String doRegister(@Valid UserModel userModel, BindingResult bindingResult, Model model, HttpServletResponse response) {
 		// check for errors
@@ -88,16 +104,30 @@ public class UserController {
 		// add user model
 		model.addAttribute("userModel", userModel);
 		
-		// these cookies keep track of current registered user
-		Cookie cookie = new Cookie("username", userModel.getUsername());
-		Cookie cookie2 = new Cookie("password", userModel.getPassword());
-		response.addCookie(cookie);
-		response.addCookie(cookie2);
+		// register user and track them with cookies
+		UserModel usr1 = securityService.registerUser(userModel, response);
+		System.out.println();
 		
-		UserModel usr1 = new UserModel(userModel.getUsername(), userModel.getPassword());
-		//list.add(usr1);
-		// System.out.println(userModel.toString());
-		// System.out.println(userModel.getFirstname() + " " + userModel.getLastname() +  " " + userModel.getEmail() +  " " + userModel.getPhone());
 		return "RegisterSuccess";
+		
 	}
+	
+	// goes to create product page
+	@GetMapping("/createProduct")
+	public String createProduct(Model model) {
+		model.addAttribute("productModel", new ProductModel());
+		return "createProduct";
+	}
+	
+	@PostMapping("/createPackage")
+	public String createPackage(@Valid ProductModel productModel,BindingResult bindingResult,  Model model) {
+		
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("title", "Registration Form");
+			return "CreateProduct";
+		}
+		return "ProductSuccess";
+	}
+		
+	
 }

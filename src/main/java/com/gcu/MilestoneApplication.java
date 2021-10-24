@@ -14,9 +14,7 @@ import com.gcu.model.UserModel;
  * 10/3/2021
  */
 @SpringBootApplication
-public class MilestoneApplication {
-	
-	List<UserModel> list=new ArrayList<UserModel>();  
+public class MilestoneApplication {  
 
 	public static void main(String[] args) {
 		SpringApplication.run(MilestoneApplication.class, args);
